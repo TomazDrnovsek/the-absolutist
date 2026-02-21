@@ -1,0 +1,13 @@
+# Local environment variables
+.env
+.env.local
+
+# Dependencies & Build
+node_modules/
+dist/
+build/
+.next/
+
+# System files
+.DS_Store
+Thumbs.db

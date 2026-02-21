@@ -1,0 +1,167 @@
+
+import React, { useState, useRef } from 'react';
+// @ts-ignore - handled via importmap in index.html
+import html2canvas from 'html2canvas';
+import { SessionData } from '../types';
+import BauhausComposition from './BauhausComposition';
+import MechanicalButton from './MechanicalButton';
+import { audio } from '../utils/audio';
+
+interface SessionDetailViewProps {
+  session: SessionData;
+  onClose: () => void;
+}
+
+const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose }) => {
+  const [isSharing, setIsSharing] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const avgResonance = Math.round(
+    session.progress.reduce((a: number, b) => a + (b || 0), 0) / 20
+  );
+
+  const handleShare = async () => {
+    if (isSharing || !cardRef.current) return;
+    setIsSharing(true);
+    
+    // 1. Audio Feedback: Mechanical Shutter
+    audio.playShutter();
+
+    try {
+        // 2. Generate High-Res Image
+        const canvas = await html2canvas(cardRef.current, {
+            scale: 3, // 3x scale for crisp text on Retina/High-DPI
+            backgroundColor: '#ffffff',
+            logging: false,
+            useCORS: true
+        });
+
+        canvas.toBlob(async (blob) => {
+            if (!blob) {
+                setIsSharing(false);
+                return;
+            }
+
+            const fileName = `absolutist-session-${session.id.toString().padStart(2, '0')}.png`;
+            const file = new File([blob], fileName, { type: 'image/png' });
+            
+            const shareData = {
+                title: 'The Absolutist',
+                text: `Session ${session.id.toString().padStart(2, '0')} — ${avgResonance}% Resonance`,
+                files: [file]
+            };
+
+            // 3. Native Share or Download Fallback
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                     // Ignore AbortError (user cancelled share sheet)
+                    if ((err as Error).name !== 'AbortError') {
+                        console.error('Share failed', err);
+                    }
+                }
+            } else {
+                // Desktop/Fallback: Download the image
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            setIsSharing(false);
+        }, 'image/png');
+
+    } catch (e) {
+        console.error('Artifact generation failed', e);
+        alert('Could not generate artifact image.');
+        setIsSharing(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-[#F5F2EB] z-[70] flex flex-col font-sans overflow-hidden animate-in fade-in duration-300">
+      
+      {/* Header Spacer to match Menu position perfectly */}
+      <div className="shrink-0 pt-safe-top z-50">
+        <div className="w-full px-6 py-4 flex justify-end">
+            <MechanicalButton
+              onTrigger={() => { audio.playClick(); onClose(); }}
+              scaleActive={0.85}
+              className="w-12 h-12 flex items-center justify-center border-2 border-[#121212] hover:bg-[#121212] hover:text-white transition-colors text-sm bg-[#F5F2EB]"
+            >
+              ✕
+            </MechanicalButton>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 flex flex-col items-center justify-center w-full px-10 relative z-10">
+
+        <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-neutral-400 mb-5">
+          The Absolutist
+        </p>
+
+        {/* Artifact Card - Ref added here for Capture */}
+        <div 
+            ref={cardRef}
+            className="w-full max-w-[280px] bg-white border border-neutral-200"
+        >
+          
+          {/* Poster */}
+          <div className="p-4">
+            <BauhausComposition
+              levels={session.levels}
+              progress={session.progress}
+              sessionId={session.id}
+              className="w-full h-auto"
+            />
+          </div>
+
+          {/* Divider */}
+          <div className="mx-4 border-t border-neutral-150" style={{ borderColor: '#e8e5de' }} />
+
+          {/* Metadata */}
+          <div className="px-4 py-3.5 flex items-end justify-between">
+            <div>
+              <p className="text-[9px] font-mono uppercase tracking-[0.24em] text-neutral-400 mb-0.5">
+                Resonance
+              </p>
+              <p className="text-[26px] font-black tracking-[-0.03em] leading-none text-[#121212]">
+                {avgResonance}<span className="text-base font-bold ml-0.5">%</span>
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-[9px] font-mono uppercase tracking-[0.24em] text-neutral-400 mb-0.5">
+                Session
+              </p>
+              <p className="text-[26px] font-black tracking-[-0.03em] leading-none text-[#121212]">
+                {session.id.toString().padStart(2, '0')}
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Share button */}
+      <div className="flex-none w-full px-6 pb-8 relative z-10">
+        <MechanicalButton
+          onTrigger={handleShare}
+          disabled={isSharing}
+          className="w-full h-14 bg-[#121212] text-white font-normal uppercase tracking-widest text-xs border border-[#121212] flex items-center justify-center disabled:opacity-50"
+        >
+          {isSharing ? 'GENERATING ARTIFACT...' : 'SHARE IDENTITY'}
+        </MechanicalButton>
+      </div>
+
+    </div>
+  );
+};
+
+export default SessionDetailView;
