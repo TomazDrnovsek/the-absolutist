@@ -2,7 +2,7 @@
   channel = "stable-24.05";
   packages = [
     pkgs.nodejs_22
-    pkgs.jdk17
+    pkgs.jdk21
   ];
   idx.extensions = [
     "svelte.svelte-vscode"
@@ -11,6 +11,9 @@
   idx.previews = {
     enable = true;
     previews = {
+      android = {
+        manager = "android";
+      };
       web = {
         command = [
           "npm"
