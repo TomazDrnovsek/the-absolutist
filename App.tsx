@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { HSL, SessionData, HarmonyType } from './types';
+import { HSL, SessionData, HarmonyType, HarmonyNode } from './types';
 import { 
   hslToString, 
   calculateMatchScore 
@@ -92,7 +92,7 @@ const App: React.FC = () => {
         // Ensure we start on an UNLOCKED node
         const currentLvl = parsedSession.levels[parsedLevelIndex];
         if (currentLvl) {
-            const firstUnlocked = currentLvl.nodes.find((n: any) => !n.isLocked);
+            const firstUnlocked = currentLvl.nodes.find((n: HarmonyNode) => !n.isLocked);
             if (firstUnlocked) {
                  setActiveNodeId(firstUnlocked.id);
             }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { audio } from '../utils/audio';
 
 interface MechanicalButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -16,32 +16,19 @@ const MechanicalButton: React.FC<MechanicalButtonProps> = ({
   ...props 
 }) => {
   const [isPressed, setIsPressed] = useState(false);
-  const isMounted = useRef(true);
-
-  useEffect(() => {
-    return () => { isMounted.current = false; };
-  }, []);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (disabled || isPressed) return;
+    if (disabled) return;
     
-    // 1. Immediate Feedback
-    setIsPressed(true);
     audio.triggerHaptic(15);
-
-    // 2. The "Latch"
-    setTimeout(() => {
-      if (isMounted.current) {
-        // 3. Release
-        setIsPressed(false);
-        // 4. Action
-        onTrigger();
-      }
-    }, 150);
+    onTrigger();
   };
 
   return (
     <button
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseLeave={() => setIsPressed(false)}
       onClick={handleClick}
       disabled={disabled}
       className={`${className} transition-transform duration-100 ease-out`}

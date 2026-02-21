@@ -32,8 +32,7 @@ export interface HarmonyNode {
 export interface LevelData {
   levelNumber: number;
   rootColor: HSL;
-  // CHANGED: string allows "COMPLEMENTARY" (uppercase display label)
-  harmonyType: string; 
+  harmonyType: HarmonyType; 
   nodes: HarmonyNode[]; // The puzzle state
 }
 
