@@ -11,11 +11,9 @@
   idx.previews = {
     enable = true;
     previews = {
-      /*
       android = {
         manager = "android";
       };
-      */
       web = {
         command = [
           "npm"
