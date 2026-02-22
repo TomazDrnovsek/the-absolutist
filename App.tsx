@@ -151,7 +151,23 @@ const App: React.FC = () => {
     
     audio.playSuccess(); 
   };
-  // ---------------------------------
+  
+  const handleClearData = () => {
+    localStorage.removeItem('absolutist_archive_v1');
+    localStorage.removeItem('absolutist_current_session_v2');
+    localStorage.removeItem('absolutist_level_index_v2');
+    localStorage.removeItem('absolutist_onboarding_complete');
+
+    setArchivedSessions([]);
+    const newSession = getNextSession(1);
+    setSession(newSession);
+    setLevelIndex(0);
+    setActiveNodeId(1);
+    setSessionCount(1);
+    setHasCompletedOnboarding(false);
+    setShowMenu(false);
+    audio.playClick();
+  };
 
   const handleUpdateColor = (key: keyof HSL, val: number) => {
       if (isDeveloped || !session || !currentLevel || !activeNode || activeNode.isLocked) return;
@@ -517,6 +533,7 @@ const App: React.FC = () => {
                     setShowMenu(false);
                 }}
                 onDevGenerate={handleDevGenerate} 
+                onClearData={handleClearData}
             />
         )}
         
