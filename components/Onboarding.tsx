@@ -63,7 +63,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         
         {/* --- 1. TOP SECTION: HARMONY VIEW (No Header) --- */}
         <div className="flex-1 w-full relative z-10 flex items-center justify-center p-4 touch-none">
-            <div className="relative aspect-square h-[50vh] max-h-full max-w-full flex items-center justify-center">
+            <div className="relative aspect-square w-full max-h-[50vh] max-w-full flex items-center justify-center">
                  <HarmonyView 
                     level={tutorialLevel} 
                     activeNodeId={2} 
@@ -125,7 +125,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               
               {/* TOP STAGE: Matches the exact height and layout of the Onboarding gameplay section */}
               <div className="flex-1 w-full relative z-10 flex items-center justify-center p-4 pointer-events-none">
-                  <div className="relative aspect-square h-[50vh] max-h-full max-w-full flex items-center justify-center">
+                  <div className="relative aspect-square w-full max-h-[50vh] max-w-full flex items-center justify-center">
                        <HarmonyView 
                           level={tutorialLevel} 
                           activeNodeId={-1} 
