@@ -1,7 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-// @ts-ignore - handled via importmap in index.html
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import { SessionData } from '../types';
 import BauhausComposition from './BauhausComposition';
 import MechanicalButton from './MechanicalButton';
@@ -24,58 +23,46 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
     if (isSharing || !cardRef.current) return;
     setIsSharing(true);
     
-    // 1. Audio Feedback: Mechanical Shutter
     audio.playShutter();
 
     try {
-        // 2. Generate High-Res Image
-        const canvas = await html2canvas(cardRef.current, {
-            scale: 3, // 3x scale for crisp text on Retina/High-DPI
-            backgroundColor: '#ffffff',
-            logging: false,
-            useCORS: true
-        });
+        const dataUrl = await toPng(cardRef.current, { pixelRatio: 3, skipFonts: true });
+        const blob = await (await fetch(dataUrl)).blob();
 
-        canvas.toBlob(async (blob) => {
-            if (!blob) {
-                setIsSharing(false);
-                return;
-            }
-
-            const fileName = `absolutist-session-${session.id.toString().padStart(2, '0')}.png`;
-            const file = new File([blob], fileName, { type: 'image/png' });
-            
-            const shareData = {
-                title: 'The Absolutist',
-                text: `Session ${session.id.toString().padStart(2, '0')} — ${avgResonance}% Resonance`,
-                files: [file]
-            };
-
-            // 3. Native Share or Download Fallback
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share(shareData);
-                } catch (err) {
-                     // Ignore AbortError (user cancelled share sheet)
-                    if ((err as Error).name !== 'AbortError') {
-                        console.error('Share failed', err);
-                    }
-                }
-            } else {
-                // Desktop/Fallback: Download the image
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
-
+        if (!blob) {
             setIsSharing(false);
-        }, 'image/png');
+            return;
+        }
 
+        const fileName = `absolutist-session-${session.id.toString().padStart(2, '0')}.png`;
+        const file = new File([blob], fileName, { type: 'image/png' });
+        
+        const shareData = {
+            title: 'The Absolutist',
+            text: `Session ${session.id.toString().padStart(2, '0')} — ${avgResonance}% Resonance`,
+            files: [file]
+        };
+
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                if ((err as Error).name !== 'AbortError') {
+                    console.error('Share failed', err);
+                }
+            }
+        } else {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        setIsSharing(false);
     } catch (e) {
         console.error('Artifact generation failed', e);
         alert('Could not generate artifact image.');
@@ -86,7 +73,6 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
   return (
     <div className="fixed inset-0 bg-[#F5F2EB] z-[70] flex flex-col font-sans overflow-hidden animate-in fade-in duration-300">
       
-      {/* Header Spacer to match Menu position perfectly */}
       <div className="shrink-0 pt-safe-top z-50">
         <div className="w-full px-6 py-4 flex justify-end">
             <MechanicalButton
@@ -99,20 +85,17 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 flex flex-col items-center justify-center w-full px-10 relative z-10">
 
         <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-neutral-400 mb-5">
           The Absolutist
         </p>
 
-        {/* Artifact Card - Ref added here for Capture */}
         <div 
             ref={cardRef}
             className="w-full max-w-[280px] bg-white border border-neutral-200"
         >
           
-          {/* Poster */}
           <div className="p-4">
             <BauhausComposition
               levels={session.levels}
@@ -122,10 +105,8 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
             />
           </div>
 
-          {/* Divider */}
           <div className="mx-4 border-t border-neutral-150" style={{ borderColor: '#e8e5de' }} />
 
-          {/* Metadata */}
           <div className="px-4 py-3.5 flex items-end justify-between">
             <div>
               <p className="text-[9px] font-mono uppercase tracking-[0.24em] text-neutral-400 mb-0.5">
@@ -149,7 +130,6 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
 
       </div>
 
-      {/* Share button */}
       <div className="flex-none w-full px-6 pb-8 relative z-10">
         <MechanicalButton
           onTrigger={handleShare}

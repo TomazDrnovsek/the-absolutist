@@ -1,10 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SessionData } from '../types';
 import BauhausComposition from './BauhausComposition';
 import MechanicalButton from './MechanicalButton';
 import WinEffect from './WinEffect';
 import { audio } from '../utils/audio';
+import { toPng } from 'html-to-image';
 
 interface ArtifactViewProps {
   session: SessionData;
@@ -13,6 +14,7 @@ interface ArtifactViewProps {
 
 const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
   const [isExiting, setIsExiting] = useState(false);
+  const artifactRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setTimeout(() => { audio.playSuccess(); }, 300);
@@ -24,9 +26,35 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
     setTimeout(() => { onArchive(); }, 500);
   };
 
-  const handleShare = () => {
-    alert('Session Composition copied to clipboard.');
+  const handleShare = async () => {
+    if (!artifactRef.current) return;
     audio.playClick();
+
+    const element = artifactRef.current;
+
+    try {
+        const dataUrl = await toPng(element, { pixelRatio: 2, skipFonts: true });
+        const blob = await (await fetch(dataUrl)).blob();
+
+        if (blob) {
+            try {
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                alert('Session Composition copied to clipboard.');
+            } catch (err) {
+                console.error('Failed to copy image to clipboard', err);
+                // Fallback for browsers that don't support clipboard API for images
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = `absolutist-session-${session.id}.png`;
+                a.click();
+            }
+        } else {
+            alert('Artifact generation failed. Please try again.');
+        }
+    } catch (error) {
+        console.error("Artifact generation failed", error);
+        alert("Artifact generation failed: " + (error as Error).message);
+    }
   };
 
   const avgResonance = Math.round(
@@ -55,11 +83,11 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
         </p>
 
         {/* ── ARTIFACT CARD ── */}
-        <div className="
+        <div ref={artifactRef} className="
           flex-none w-full bg-white border border-neutral-200
           animate-in slide-in-from-bottom-4 fade-in duration-700 delay-200
         ">
-          {/* Poster — 16px breathing room on all sides */}
+          {/* Poster */}
           <div className="p-4">
             <BauhausComposition
               levels={session.levels}
@@ -72,7 +100,7 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
           {/* Hairline rule */}
           <div className="mx-4 border-t border-neutral-150" style={{ borderColor: '#e8e5de' }} />
 
-          {/* Info strip — two-column Swiss layout, balanced */}
+          {/* Info strip */}
           <div className="px-4 py-3.5 flex items-end justify-between">
             <div>
               <p className="text-[7px] font-mono uppercase tracking-[0.24em] text-neutral-400 mb-0.5">
