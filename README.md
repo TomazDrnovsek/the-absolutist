@@ -1,20 +1,19 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# The Absolutist
 
-# Run and deploy your AI Studio app
+A perceptual color-matching instrument built on functional, objective design principles. 
 
-This contains everything you need to run your app locally.
+This application functions as both a game and a precision tool, training the eye to recognize color harmonies (Complementary, Analogous, Triadic) without relying on traditional labels. It treats the digital screen as a mechanical canvas—utilizing absolute grid alignment, strict geometric primitives, and minimalist typography.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1QrKY7wEFHtboAr4FVJf7ZFeR5t1RKMQQ
+## Features
 
-## Run Locally
+* **Perceptual Color Engine:** Match target harmonies using pure HSL slider inputs, grounded in the color theories of Josef Albers and Johannes Itten.
+* **Objective Interface:** A stripped-down, purely functional UI featuring a strict modular grid, raw monochrome ink (`#121212`), and zero decorative noise.
+* **Geometric Verification:** Mathematical "Schematic Links" prove color relationships geometrically upon success, replacing arbitrary gaming animations with logical feedback.
+* **Artifact Export:** Players can authenticate their sessions by generating and downloading high-resolution PNG posters of their completed color geometries.
 
-**Prerequisites:**  Node.js
+## Tech Stack
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+* **Frontend:** React (TypeScript)
+* **Styling:** Tailwind CSS
+* **Export:** `html2canvas` for native artifact generation
+* **Build:** Vite / ES Modules
