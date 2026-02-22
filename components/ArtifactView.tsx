@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { SessionData } from '../types';
 import BauhausComposition from './BauhausComposition';
@@ -33,7 +34,7 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
   );
 
   return (
-    <div className="fixed inset-0 bg-[#F5F2EB] z-[60] flex flex-col items-center justify-center font-sans overflow-hidden">
+    <div className="fixed inset-0 bg-[#F5F2EB] z-[60] flex flex-col justify-between font-sans overflow-hidden px-6">
 
       {/* Subtle background win effect */}
       <div className={`absolute inset-0 z-0 opacity-20 scale-[1.75] transition-opacity duration-500 ${isExiting ? 'opacity-0' : ''}`}>
@@ -42,23 +43,21 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
 
       {/* Content */}
       <div className={`
-        flex-1 flex flex-col items-center justify-center w-full px-10 relative z-10
+        flex-1 flex flex-col items-stretch w-full relative z-10
         transition-all duration-500 ease-[cubic-bezier(0.7,0,0.3,1)]
         ${isExiting ? 'translate-y-[100vh] opacity-0' : 'translate-y-0 opacity-100'}
       `}>
 
-        <p className="text-[9px] font-mono uppercase tracking-[0.28em] text-neutral-400 mb-5 animate-in slide-in-from-top-4 fade-in duration-700 delay-100">
-          Identity Verified
+        <div className="flex-[2]" />
+
+        <p className="text-center text-[9px] font-mono uppercase tracking-[0.28em] text-neutral-400 mb-5 animate-in slide-in-from-top-4 fade-in duration-700 delay-100">
+          THE ABSOLUTIST
         </p>
 
-        {/* ── ARTIFACT CARD ──
-            1px light gray outer border
-            White padding frames the poster
-            Swiss two-column info strip below
-        ── */}
+        {/* ── ARTIFACT CARD ── */}
         <div className="
-          w-full max-w-[280px] bg-white border border-neutral-200
-          animate-in zoom-in-95 fade-in duration-700 delay-200
+          flex-none w-full bg-white border border-neutral-200
+          animate-in slide-in-from-bottom-4 fade-in duration-700 delay-200
         ">
           {/* Poster — 16px breathing room on all sides */}
           <div className="p-4">
@@ -94,11 +93,13 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
           </div>
         </div>
 
+        <div className="flex-1" />
+
       </div>
 
       {/* Actions */}
       <div className={`
-        flex-none w-full px-6 pb-8 flex flex-col gap-3 relative z-10
+        flex-none w-full pb-8 flex flex-col gap-3 relative z-10
         transition-all duration-500 delay-100
         ${isExiting ? 'translate-y-20 opacity-0' : 'animate-in slide-in-from-bottom-full fade-in duration-700 delay-700'}
       `}>
@@ -106,13 +107,13 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
           onTrigger={handleShare}
           className="w-full h-12 flex items-center justify-center text-[#121212] font-normal uppercase tracking-widest text-xs hover:opacity-60 border border-transparent"
         >
-          Share Identity
+          SHARE IDENTITY
         </MechanicalButton>
         <MechanicalButton
           onTrigger={handleArchive}
           className="w-full h-14 bg-[#121212] text-white font-normal uppercase tracking-widest text-xs border border-[#121212] flex items-center justify-center"
         >
-          Archive to Collection
+          ARCHIVE TO COLLECTION
         </MechanicalButton>
       </div>
 

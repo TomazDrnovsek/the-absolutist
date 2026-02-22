@@ -119,8 +119,8 @@ const App: React.FC = () => {
   // --- DEV: GENERATE 10 SESSIONS ---
   const handleDevGenerate = () => {
     const newArchive = [...archivedSessions];
-    // Start from the next ID after the current session
-    let startId = session ? session.id + 1 : 1;
+    // FIXED: Start from the current ID to avoid off-by-one error and gaps
+    let startId = session ? session.id : 1;
 
     for (let i = 0; i < 10; i++) {
         const id = startId + i;

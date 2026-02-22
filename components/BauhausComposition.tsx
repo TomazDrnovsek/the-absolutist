@@ -534,8 +534,11 @@ const BauhausComposition: React.FC<BauhausCompositionProps> = ({
   return (
     <svg
       viewBox={`0 0 ${CW} ${CH}`}
+      width="100%"
+      height="auto"
+      preserveAspectRatio="xMidYMid meet"
       className={className}
-      style={{ display: 'block', backgroundColor: '#ffffff' }}
+      style={{ display: 'block', width: '100%', backgroundColor: '#ffffff' }}
       xmlns="http://www.w3.org/2000/svg"
       shapeRendering="geometricPrecision"
     >
