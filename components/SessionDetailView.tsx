@@ -11,6 +11,16 @@ interface SessionDetailViewProps {
   onClose: () => void;
 }
 
+// ── Android WebView cannot fetch() a data: URI. Convert manually. ──
+function dataUrlToBlob(dataUrl: string): Blob {
+  const [header, base64] = dataUrl.split(',');
+  const mime = header.match(/:(.*?);/)![1];
+  const binary = atob(base64);
+  const arr = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+
 const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose }) => {
   const [isSharing, setIsSharing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -22,66 +32,68 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
   const handleShare = async () => {
     if (isSharing || !cardRef.current) return;
     setIsSharing(true);
-    
+
     audio.playShutter();
 
     try {
-        const dataUrl = await toPng(cardRef.current, { pixelRatio: 3, skipFonts: true });
-        const blob = await (await fetch(dataUrl)).blob();
+      // html-to-image can silently produce an empty canvas on first call in
+      // Android WebView — call twice; second pass is reliable.
+      try { await toPng(cardRef.current, { pixelRatio: 3, skipFonts: true }); } catch (_) {}
+      const dataUrl = await toPng(cardRef.current, { pixelRatio: 3, skipFonts: true });
 
-        if (!blob) {
-            setIsSharing(false);
-            return;
-        }
+      // Do NOT use fetch(dataUrl) — Android WebView blocks data: URI fetches.
+      const blob = dataUrlToBlob(dataUrl);
 
-        const fileName = `absolutist-session-${session.id.toString().padStart(2, '0')}.png`;
-        const file = new File([blob], fileName, { type: 'image/png' });
-        
-        const shareData = {
+      const fileName = `absolutist-session-${session.id.toString().padStart(2, '0')}.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({ files: [file] })
+      ) {
+        try {
+          await navigator.share({
             title: 'The Absolutist',
             text: `Session ${session.id.toString().padStart(2, '0')} · ${avgResonance}% Resonance`,
-            files: [file]
-        };
-
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            try {
-                await navigator.share(shareData);
-            } catch (err) {
-                if ((err as Error).name !== 'AbortError') {
-                    console.error('Share failed', err);
-                }
-            }
-        } else {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            files: [file],
+          });
+        } catch (err) {
+          // AbortError = user dismissed — not a failure
+          if ((err as Error).name !== 'AbortError') {
+            console.error('Share failed', err);
+          }
         }
-
-        setIsSharing(false);
+      } else {
+        // Fallback: trigger download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
     } catch (e) {
-        console.error('Artifact generation failed', e);
-        alert('Export failed. Please try again.');
-        setIsSharing(false);
+      console.error('Artifact generation failed', e);
+    } finally {
+      setIsSharing(false);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-[#F5F2EB] z-[70] flex flex-col font-sans overflow-hidden animate-in fade-in duration-300">
-      
+
       <div className="shrink-0 pt-safe-top z-50">
         <div className="w-full px-6 py-4 flex justify-end">
-            <MechanicalButton
-              onTrigger={() => { audio.playClick(); onClose(); }}
-              scaleActive={0.85}
-              className="w-12 h-12 flex items-center justify-center border-2 border-[#121212] hover:bg-[#121212] hover:text-white transition-colors text-sm bg-[#F5F2EB]"
-            >
-              ✕
-            </MechanicalButton>
+          <MechanicalButton
+            onTrigger={() => { audio.playClick(); onClose(); }}
+            scaleActive={0.85}
+            className="w-12 h-12 flex items-center justify-center border-2 border-[#121212] hover:bg-[#121212] hover:text-white transition-colors text-sm bg-[#F5F2EB]"
+          >
+            ✕
+          </MechanicalButton>
         </div>
       </div>
 
@@ -91,11 +103,11 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
           THE ABSOLUTIST
         </p>
 
-        <div 
-            ref={cardRef}
-            className="w-full max-w-[280px] bg-white border border-neutral-200"
+        <div
+          ref={cardRef}
+          className="w-full max-w-[280px] bg-white border border-neutral-200"
         >
-          
+
           <div className="p-4">
             <BauhausComposition
               levels={session.levels}
@@ -136,7 +148,7 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
           disabled={isSharing}
           className="w-full h-14 bg-[#121212] text-white font-normal uppercase tracking-widest text-xs border border-[#121212] flex items-center justify-center disabled:opacity-50"
         >
-          {isSharing ? 'GENERATING...' : 'EXPORT ARTIFACT'}
+          {isSharing ? 'GENERATING…' : 'EXPORT ARTIFACT'}
         </MechanicalButton>
       </div>
 

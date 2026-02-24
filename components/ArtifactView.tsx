@@ -12,8 +12,19 @@ interface ArtifactViewProps {
   onArchive: () => void;
 }
 
+// ── Android WebView cannot fetch() a data: URI. Convert manually. ──
+function dataUrlToBlob(dataUrl: string): Blob {
+  const [header, base64] = dataUrl.split(',');
+  const mime = header.match(/:(.*?);/)![1];
+  const binary = atob(base64);
+  const arr = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+
 const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
   const [isExiting, setIsExiting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const artifactRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,33 +38,55 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
   };
 
   const handleShare = async () => {
-    if (!artifactRef.current) return;
+    if (isExporting || !artifactRef.current) return;
+    setIsExporting(true);
     audio.playClick();
 
     const element = artifactRef.current;
+    const fileName = `absolutist-session-${session.id.toString().padStart(2, '0')}.png`;
 
     try {
-        const dataUrl = await toPng(element, { pixelRatio: 2, skipFonts: true });
-        const blob = await (await fetch(dataUrl)).blob();
+      // html-to-image can silently produce an empty canvas on first call in
+      // Android WebView — call twice; second pass is reliable.
+      try { await toPng(element, { pixelRatio: 2, skipFonts: true }); } catch (_) {}
+      const dataUrl = await toPng(element, { pixelRatio: 2, skipFonts: true });
 
-        if (blob) {
-            try {
-                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                alert('Artifact copied to clipboard.');
-            } catch (err) {
-                console.error('Failed to copy image to clipboard', err);
-                // Fallback for browsers that don't support clipboard API for images
-                const a = document.createElement('a');
-                a.href = dataUrl;
-                a.download = `absolutist-session-${session.id}.png`;
-                a.click();
-            }
-        } else {
-            alert('Export failed. Please try again.');
+      // Do NOT use fetch(dataUrl) — Android WebView blocks data: URI fetches.
+      const blob = dataUrlToBlob(dataUrl);
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      // Prefer native share sheet (works on Android + iOS in Capacitor)
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({ files: [file] })
+      ) {
+        try {
+          await navigator.share({
+            title: 'The Absolutist',
+            text: `Session ${session.id.toString().padStart(2, '0')} · ${Math.round(session.progress.reduce((a: number, b) => a + (b || 0), 0) / 20)}% Resonance`,
+            files: [file],
+          });
+        } catch (err) {
+          if ((err as Error).name !== 'AbortError') {
+            console.error('Share failed', err);
+          }
         }
+      } else {
+        // Fallback: trigger download (desktop / unsupported browsers)
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
     } catch (error) {
-        console.error("Export failed", error);
-        alert("Export failed: " + (error as Error).message);
+      console.error('Export failed', error);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -133,9 +166,10 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
       `}>
         <MechanicalButton
           onTrigger={handleShare}
-          className="w-full h-12 flex items-center justify-center text-[#121212] font-normal uppercase tracking-widest text-xs hover:opacity-60 border border-transparent"
+          disabled={isExporting}
+          className="w-full h-12 flex items-center justify-center text-[#121212] font-normal uppercase tracking-widest text-xs hover:opacity-60 border border-transparent disabled:opacity-40"
         >
-          EXPORT ARTIFACT
+          {isExporting ? 'GENERATING…' : 'EXPORT ARTIFACT'}
         </MechanicalButton>
         <MechanicalButton
           onTrigger={handleArchive}
