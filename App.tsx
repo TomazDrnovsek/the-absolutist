@@ -470,6 +470,8 @@ const App: React.FC = () => {
                             </div>
                             
                             {analysisDeltas && (
+                                <>
+                                <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-neutral-400 opacity-60">DEVIATION</span>
                                 <div className="flex gap-4 mb-1 opacity-80">
                                     <div className="flex gap-1 items-baseline">
                                         <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest">ΔH</span>
@@ -477,13 +479,14 @@ const App: React.FC = () => {
                                     </div>
                                     <div className="flex gap-1 items-baseline">
                                         <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest">ΔS</span>
-                                        <span className="text-xs font-bold tabular-nums text-[#121212]">{analysisDeltas.s}</span>
+                                        <span className="text-xs font-bold tabular-nums text-[#121212]">{analysisDeltas.s}<span className="text-[9px]">pp</span></span>
                                     </div>
                                     <div className="flex gap-1 items-baseline">
                                         <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest">ΔL</span>
-                                        <span className="text-xs font-bold tabular-nums text-[#121212]">{analysisDeltas.l}</span>
+                                        <span className="text-xs font-bold tabular-nums text-[#121212]">{analysisDeltas.l}<span className="text-[9px]">pp</span></span>
                                     </div>
                                 </div>
+                                </>
                             )}
 
                             <div className="text-xs font-bold uppercase tracking-[0.25em] text-neutral-500 text-center">
