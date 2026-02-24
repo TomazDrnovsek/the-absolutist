@@ -80,7 +80,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                  {!isSuccess && (
                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none select-none">
                          <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 mb-2 animate-pulse whitespace-nowrap">
-                             Match the harmony
+                             TUNE THE HARMONY
                          </span>
                          <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-[#121212] opacity-40">
                              {tutorialLevel.harmonyType}
@@ -146,13 +146,13 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                        <div className="flex flex-col items-center justify-center gap-3 pt-2 animate-in slide-in-from-bottom-4 fade-in duration-500">
                           {/* Matches main game's "Score" font size and position */}
                           <div className="text-6xl font-medium tabular-nums text-[#121212]">
-                              MATCH
+                              RESONANCE
                           </div>
                           
                           {/* Matches main game's "Deltas" font size, color, and position */}
                           <div className="flex gap-4 mb-1 opacity-80">
                               <span className="text-xs font-bold text-neutral-500 uppercase tracking-[0.25em]">
-                                  SENSOR CALIBRATED
+                                  EYE CALIBRATED — ASSIGNMENTS BEGIN
                               </span>
                           </div>
                        </div>
