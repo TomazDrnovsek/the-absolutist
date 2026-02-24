@@ -39,7 +39,7 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
         
         const shareData = {
             title: 'The Absolutist',
-            text: `Session ${session.id.toString().padStart(2, '0')} — ${avgResonance}% Resonance`,
+            text: `Session ${session.id.toString().padStart(2, '0')} · ${avgResonance}% Resonance`,
             files: [file]
         };
 
@@ -65,7 +65,7 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
         setIsSharing(false);
     } catch (e) {
         console.error('Artifact generation failed', e);
-        alert('Could not generate artifact image.');
+        alert('Export failed. Please try again.');
         setIsSharing(false);
     }
   };
@@ -88,7 +88,7 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
       <div className="flex-1 flex flex-col items-center justify-center w-full px-10 relative z-10">
 
         <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-neutral-400 mb-5">
-          The Absolutist
+          THE ABSOLUTIST
         </p>
 
         <div 
@@ -110,7 +110,7 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
           <div className="px-4 py-3.5 flex items-end justify-between">
             <div>
               <p className="text-[9px] font-mono uppercase tracking-[0.24em] text-neutral-400 mb-0.5">
-                Resonance
+                RESONANCE
               </p>
               <p className="text-[26px] font-black tracking-[-0.03em] leading-none text-[#121212]">
                 {avgResonance}<span className="text-base font-bold ml-0.5">%</span>
@@ -118,7 +118,7 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
             </div>
             <div className="text-right">
               <p className="text-[9px] font-mono uppercase tracking-[0.24em] text-neutral-400 mb-0.5">
-                Session
+                SESSION
               </p>
               <p className="text-[26px] font-black tracking-[-0.03em] leading-none text-[#121212]">
                 {session.id.toString().padStart(2, '0')}
@@ -136,7 +136,7 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
           disabled={isSharing}
           className="w-full h-14 bg-[#121212] text-white font-normal uppercase tracking-widest text-xs border border-[#121212] flex items-center justify-center disabled:opacity-50"
         >
-          {isSharing ? 'GENERATING ARTIFACT...' : 'SHARE IDENTITY'}
+          {isSharing ? 'GENERATING...' : 'EXPORT ARTIFACT'}
         </MechanicalButton>
       </div>
 
