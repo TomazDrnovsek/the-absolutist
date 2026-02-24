@@ -39,7 +39,7 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
         if (blob) {
             try {
                 await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                alert('Session Composition copied to clipboard.');
+                alert('Artifact copied to clipboard.');
             } catch (err) {
                 console.error('Failed to copy image to clipboard', err);
                 // Fallback for browsers that don't support clipboard API for images
@@ -49,11 +49,11 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
                 a.click();
             }
         } else {
-            alert('Artifact generation failed. Please try again.');
+            alert('Export failed. Please try again.');
         }
     } catch (error) {
-        console.error("Artifact generation failed", error);
-        alert("Artifact generation failed: " + (error as Error).message);
+        console.error("Export failed", error);
+        alert("Export failed: " + (error as Error).message);
     }
   };
 
@@ -103,16 +103,16 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
           {/* Info strip */}
           <div className="px-4 py-3.5 flex items-end justify-between">
             <div>
-              <p className="text-[7px] font-mono uppercase tracking-[0.24em] text-neutral-400 mb-0.5">
-                Resonance
+              <p className="text-[9px] font-mono uppercase tracking-[0.24em] text-neutral-400 mb-0.5">
+                RESONANCE
               </p>
               <p className="text-[26px] font-black tracking-[-0.03em] leading-none text-[#121212]">
                 {avgResonance}<span className="text-base font-bold ml-0.5">%</span>
               </p>
             </div>
             <div className="text-right">
-              <p className="text-[7px] font-mono uppercase tracking-[0.24em] text-neutral-400 mb-0.5">
-                Session
+              <p className="text-[9px] font-mono uppercase tracking-[0.24em] text-neutral-400 mb-0.5">
+                SESSION
               </p>
               <p className="text-[26px] font-black tracking-[-0.03em] leading-none text-[#121212]">
                 {session.id.toString().padStart(2, '0')}
@@ -135,13 +135,13 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
           onTrigger={handleShare}
           className="w-full h-12 flex items-center justify-center text-[#121212] font-normal uppercase tracking-widest text-xs hover:opacity-60 border border-transparent"
         >
-          SHARE IDENTITY
+          EXPORT ARTIFACT
         </MechanicalButton>
         <MechanicalButton
           onTrigger={handleArchive}
           className="w-full h-14 bg-[#121212] text-white font-normal uppercase tracking-widest text-xs border border-[#121212] flex items-center justify-center"
         >
-          ARCHIVE TO COLLECTION
+          ARCHIVE SESSION
         </MechanicalButton>
       </div>
 
