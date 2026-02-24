@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { LevelData } from '../types';
 import HarmonyNodeView from './HarmonyNodeView';
 
@@ -11,6 +11,7 @@ interface HarmonyViewProps {
   isRevealed?: boolean;
   isWin?: boolean; 
   showLabel?: boolean;
+  showNodeHint?: boolean;
 }
 
 const HarmonyView: React.FC<HarmonyViewProps> = ({ 
@@ -21,11 +22,27 @@ const HarmonyView: React.FC<HarmonyViewProps> = ({
   isBauhausMode,
   isRevealed = false,
   isWin = false,
-  showLabel = true
+  showLabel = true,
+  showNodeHint = false
 }) => {
   // --- Geometry Constants (SVG Coordinates 0-100) ---
   const RADIUS = 36; 
   const CENTER = 50; 
+
+  // --- Animation State for Harmony Label ---
+  const [labelOpacity, setLabelOpacity] = useState(0.25);
+
+  useEffect(() => {
+    // On mount, trigger a 3-second pulse animation on the label.
+    // The component is remounted on each level change via the `key` prop in `App.tsx`.
+    const toBlackTimer = setTimeout(() => setLabelOpacity(1), 100);
+    const toGrayTimer = setTimeout(() => setLabelOpacity(0.25), 1600); // 100ms delay + 1.5s transition
+
+    return () => {
+        clearTimeout(toBlackTimer);
+        clearTimeout(toGrayTimer);
+    };
+  }, []); // Empty dependency array ensures this runs only once on mount.
 
   // Convert Hue (0-360) to SVG Coordinates
   const calculatePosition = (hue: number) => {
@@ -161,19 +178,31 @@ const HarmonyView: React.FC<HarmonyViewProps> = ({
                }}
                onDoubleClick={isInteractive ? onNodeDoubleClick : undefined}
                size={40} 
+               isHintTarget={showNodeHint && !node.isLocked && node.id !== activeNodeId}
              />
            </div>
          );
        })}
        
-       {/* 4. LABEL (Hide on Win/Reveal) */}
        {!isRevealed && showLabel && (
-           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-25 pointer-events-none">
-               <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-[#121212]">
-                   {level.harmonyType}
-               </span>
-           </div>
-       )}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center">
+            <span
+                className="text-[9px] font-mono tracking-[0.25em] uppercase text-[#121212] text-center absolute"
+                style={{
+                    opacity: showNodeHint ? 0 : labelOpacity,
+                    transition: `opacity ${showNodeHint ? '0.5s' : '1.5s'} ease-in-out`
+                }}
+            >
+                {level.harmonyType}
+            </span>
+            <span
+                className="text-[9px] font-mono tracking-[0.25em] uppercase text-[#121212] text-center transition-opacity duration-500 absolute"
+                style={{ opacity: showNodeHint ? 0.7 : 0 }}
+            >
+                SELECT NODE
+            </span>
+        </div>
+    )}
     </div>
   );
 };
