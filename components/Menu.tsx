@@ -82,7 +82,7 @@ const Menu: React.FC<MenuProps> = ({
         {/* Footer */}
         <div className="mt-auto pt-12 flex flex-col items-center gap-4">
             <span className="text-[10px] font-mono tracking-widest text-[#121212] uppercase opacity-30">
-                V1.2.9
+                V0.1
             </span>
 
             {/* DEV BUTTONS */}
