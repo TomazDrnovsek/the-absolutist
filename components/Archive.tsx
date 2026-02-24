@@ -47,7 +47,7 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
                 <div className="flex items-baseline gap-2">
                   {/* FIXED: Bumped text-[9px] -> text-[10px] */}
                   <span className="text-[10px] font-mono uppercase tracking-[0.24em] text-neutral-400">
-                    Active Session
+                    IN PROGRESS
                   </span>
                   <span className="text-base font-black text-[#121212]">
                     {currentSession.id.toString().padStart(2, '0')}
@@ -60,7 +60,7 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
                 <div className="flex items-baseline gap-2">
                   {/* FIXED: Bumped text-[8px] -> text-[10px] */}
                   <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-neutral-400">
-                    Assignment
+                    ASSIGNMENT
                   </span>
                   <span className="text-lg font-black tracking-tight text-[#121212]">
                     {currentLevel.toString().padStart(2, '0')}
@@ -78,7 +78,7 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
 
                 {/* Status label - FIXED: "Unverified" -> "Unauthenticated", Bumped size */}
                 <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-neutral-400">
-                  Unauthenticated — Complete all assignments to generate artifact
+                  UNAUTHENTICATED · 20 ASSIGNMENTS TO COMPLETE
                 </p>
               </div>
 
@@ -122,7 +122,7 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
                         <div>
                           {/* FIXED: Bumped text-[7px] -> text-[9px] */}
                           <p className="text-[9px] font-mono uppercase tracking-[0.22em] text-neutral-400 mb-1">
-                            Session
+                            SESSION
                           </p>
                           <p className="text-xl font-black tracking-tight text-[#121212]">
                             {session.id.toString().padStart(2, '0')}
@@ -131,7 +131,7 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
                         <div className="text-right">
                           {/* FIXED: Bumped text-[7px] -> text-[9px] */}
                           <p className="text-[9px] font-mono uppercase tracking-[0.22em] text-neutral-400 mb-1">
-                            Resonance
+                            RESONANCE
                           </p>
                           <p className="text-xl font-black tracking-tight text-[#121212]">
                             {avgResonance}<span className="text-xs font-bold ml-0.5">%</span>
@@ -146,7 +146,7 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
             </div>
           ) : (
             <div className="text-center py-24 opacity-40">
-              <p className="text-[11px] font-mono uppercase tracking-[0.2em]">No Completed Sessions</p>
+              <p className="text-[11px] font-mono uppercase tracking-[0.2em]">NO SESSIONS AUTHENTICATED YET</p>
             </div>
           )}
 
