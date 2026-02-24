@@ -56,7 +56,7 @@ const Menu: React.FC<MenuProps> = ({
         <MechanicalButton onTrigger={() => { audio.playClick(); toggleBauhausMode(); }} scaleActive={0.98} className="text-left group flex items-baseline gap-6 w-full">
             <span className="text-xs font-normal tabular-nums text-neutral-400/60 group-hover:text-[#121212]">02</span>
             <div className="flex-1 flex items-center justify-between gap-4">
-                <span className="text-2xl font-light uppercase tracking-widest text-[#121212] group-hover:translate-x-2 group-hover:font-bold transition-all">bauhaus</span>
+                <span className="text-2xl font-light uppercase tracking-widest text-[#121212] group-hover:translate-x-2 group-hover:font-bold transition-all">bauhaus mode</span>
                 <div className={`w-12 h-6 border-2 border-[#121212] p-1 transition-colors ${isBauhausMode ? 'bg-[#121212]' : 'bg-transparent'}`}><div className={`h-full w-1/2 bg-[#121212] transition-all ease-out ${isBauhausMode ? 'translate-x-full bg-white' : 'translate-x-0'}`} /></div>
             </div>
         </MechanicalButton>
