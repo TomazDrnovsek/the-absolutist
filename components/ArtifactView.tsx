@@ -5,21 +5,11 @@ import BauhausComposition from './BauhausComposition';
 import MechanicalButton from './MechanicalButton';
 import WinEffect from './WinEffect';
 import { audio } from '../utils/audio';
-import { toPng } from 'html-to-image';
+import { exportArtifact } from '../utils/exportArtifact';
 
 interface ArtifactViewProps {
   session: SessionData;
   onArchive: () => void;
-}
-
-// ── Android WebView cannot fetch() a data: URI. Convert manually. ──
-function dataUrlToBlob(dataUrl: string): Blob {
-  const [header, base64] = dataUrl.split(',');
-  const mime = header.match(/:(.*?);/)![1];
-  const binary = atob(base64);
-  const arr = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
-  return new Blob([arr], { type: mime });
 }
 
 const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
@@ -37,62 +27,30 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
     setTimeout(() => { onArchive(); }, 500);
   };
 
-  const handleShare = async () => {
+  const avgResonance = Math.round(
+    session.progress.reduce((a: number, b) => a + (b || 0), 0) / 20
+  );
+
+  const handleExport = async () => {
     if (isExporting || !artifactRef.current) return;
     setIsExporting(true);
     audio.playClick();
 
-    const element = artifactRef.current;
-    const fileName = `absolutist-session-${session.id.toString().padStart(2, '0')}.png`;
-
     try {
-      // html-to-image can silently produce an empty canvas on first call in
-      // Android WebView — call twice; second pass is reliable.
-      try { await toPng(element, { pixelRatio: 2, skipFonts: true }); } catch (_) {}
-      const dataUrl = await toPng(element, { pixelRatio: 2, skipFonts: true });
-
-      // Do NOT use fetch(dataUrl) — Android WebView blocks data: URI fetches.
-      const blob = dataUrlToBlob(dataUrl);
-      const file = new File([blob], fileName, { type: 'image/png' });
-
-      // Prefer native share sheet (works on Android + iOS in Capacitor)
-      if (
-        navigator.share &&
-        navigator.canShare &&
-        navigator.canShare({ files: [file] })
-      ) {
-        try {
-          await navigator.share({
-            title: 'The Absolutist',
-            text: `Session ${session.id.toString().padStart(2, '0')} · ${Math.round(session.progress.reduce((a: number, b) => a + (b || 0), 0) / 20)}% Resonance`,
-            files: [file],
-          });
-        } catch (err) {
-          if ((err as Error).name !== 'AbortError') {
-            console.error('Share failed', err);
-          }
-        }
-      } else {
-        // Fallback: trigger download (desktop / unsupported browsers)
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
+      await exportArtifact({
+        element: artifactRef.current,
+        sessionId: session.id,
+        resonance: avgResonance,
+        pixelRatio: 2,
+      });
     } catch (error) {
-      console.error('Export failed', error);
+      if ((error as Error).name !== 'AbortError') {
+        console.error('Export failed', error);
+      }
     } finally {
       setIsExporting(false);
     }
   };
-
-  const avgResonance = Math.round(
-    session.progress.reduce((a: number, b) => a + (b || 0), 0) / 20
-  );
 
   return (
     <div className="fixed inset-0 bg-[#F5F2EB] z-[60] flex flex-col justify-between font-sans overflow-hidden px-6">
@@ -165,7 +123,7 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
         ${isExiting ? 'translate-y-20 opacity-0' : 'animate-in slide-in-from-bottom-full fade-in duration-700 delay-700'}
       `}>
         <MechanicalButton
-          onTrigger={handleShare}
+          onTrigger={handleExport}
           disabled={isExporting}
           className="w-full h-12 flex items-center justify-center text-[#121212] font-normal uppercase tracking-widest text-xs hover:opacity-60 border border-transparent disabled:opacity-40"
         >

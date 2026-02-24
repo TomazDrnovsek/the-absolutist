@@ -1,24 +1,14 @@
 
 import React, { useState, useRef } from 'react';
-import { toPng } from 'html-to-image';
 import { SessionData } from '../types';
 import BauhausComposition from './BauhausComposition';
 import MechanicalButton from './MechanicalButton';
 import { audio } from '../utils/audio';
+import { exportArtifact } from '../utils/exportArtifact';
 
 interface SessionDetailViewProps {
   session: SessionData;
   onClose: () => void;
-}
-
-// ── Android WebView cannot fetch() a data: URI. Convert manually. ──
-function dataUrlToBlob(dataUrl: string): Blob {
-  const [header, base64] = dataUrl.split(',');
-  const mime = header.match(/:(.*?);/)![1];
-  const binary = atob(base64);
-  const arr = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
-  return new Blob([arr], { type: mime });
 }
 
 const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose }) => {
@@ -32,51 +22,19 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
   const handleShare = async () => {
     if (isSharing || !cardRef.current) return;
     setIsSharing(true);
-
     audio.playShutter();
 
     try {
-      // html-to-image can silently produce an empty canvas on first call in
-      // Android WebView — call twice; second pass is reliable.
-      try { await toPng(cardRef.current, { pixelRatio: 3, skipFonts: true }); } catch (_) {}
-      const dataUrl = await toPng(cardRef.current, { pixelRatio: 3, skipFonts: true });
-
-      // Do NOT use fetch(dataUrl) — Android WebView blocks data: URI fetches.
-      const blob = dataUrlToBlob(dataUrl);
-
-      const fileName = `absolutist-session-${session.id.toString().padStart(2, '0')}.png`;
-      const file = new File([blob], fileName, { type: 'image/png' });
-
-      if (
-        navigator.share &&
-        navigator.canShare &&
-        navigator.canShare({ files: [file] })
-      ) {
-        try {
-          await navigator.share({
-            title: 'The Absolutist',
-            text: `Session ${session.id.toString().padStart(2, '0')} · ${avgResonance}% Resonance`,
-            files: [file],
-          });
-        } catch (err) {
-          // AbortError = user dismissed — not a failure
-          if ((err as Error).name !== 'AbortError') {
-            console.error('Share failed', err);
-          }
-        }
-      } else {
-        // Fallback: trigger download
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+      await exportArtifact({
+        element: cardRef.current,
+        sessionId: session.id,
+        resonance: avgResonance,
+        pixelRatio: 3,
+      });
+    } catch (error) {
+      if ((error as Error).name !== 'AbortError') {
+        console.error('Export failed', error);
       }
-    } catch (e) {
-      console.error('Artifact generation failed', e);
     } finally {
       setIsSharing(false);
     }
