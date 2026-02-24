@@ -38,7 +38,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onStart }) => {
            FIXED: Removed 'animate-pulse' for a steady, confident Swiss look.
         */}
         <div className="text-[9px] font-mono font-medium uppercase tracking-[0.25em] text-neutral-400 tabular-nums">
-             TAP TO INITIALIZE
+             TAP TO BEGIN CALIBRATION
         </div>
       </div>
       
