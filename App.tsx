@@ -126,6 +126,7 @@ const App: React.FC = () => {
   const handleStart = async () => {
     await audio.resume();
     audio.playClick();
+    audio.triggerHaptic([10, 40, 10, 40, 10]);
     setHasStarted(true);
   };
 
