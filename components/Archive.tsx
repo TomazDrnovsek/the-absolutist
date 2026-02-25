@@ -13,6 +13,59 @@ interface ArchiveProps {
 }
 
 const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, sessions, onClose, onSessionClick }) => {
+
+  const renderInProgressCard = () => {
+    if (!currentSession) return null;
+
+    const completedAssignments = currentSession.progress.filter(p => p !== null);
+    const sum = completedAssignments.reduce((a, b) => a + (b as number), 0);
+    const avgResonance = completedAssignments.length > 0 ? Math.round(sum / completedAssignments.length) : null;
+
+    return (
+      <div className="border border-neutral-200 bg-white p-4">
+        
+        {/* Header row */}
+        <div className="flex items-baseline justify-between mb-3">
+          <div className="flex items-baseline gap-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.24em] text-neutral-400">
+              IN PROGRESS
+            </span>
+            <span className="text-base font-black text-[#121212]">
+              {currentSession.id.toString().padStart(2, '0')}
+            </span>
+          </div>
+        </div>
+
+        {/* Progress info */}
+        <div className="space-y-2">
+          <div className="flex items-baseline gap-2">
+            <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-neutral-400">
+              ASSIGNMENT
+            </span>
+            <span className="text-lg font-black tracking-tight text-[#121212]">
+              {currentLevel.toString().padStart(2, '0')}
+            </span>
+            <span className="text-sm font-mono text-neutral-400">/ 20</span>
+          </div>
+
+          {/* Simple progress bar */}
+          <div className="h-1 bg-neutral-100 relative overflow-hidden">
+            <div 
+              className="absolute inset-y-0 left-0 bg-[#121212] transition-all duration-300"
+              style={{ width: `${(currentLevel / 20) * 100}%` }}
+            />
+          </div>
+
+          {/* Status label */}
+          <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-neutral-400">
+            AVG RESONANCE {avgResonance !== null ? `${avgResonance}%` : '—'}
+          </p>
+        </div>
+
+      </div>
+    );
+  };
+
   return (
     <div className="absolute inset-0 z-50 bg-[#F5F2EB] flex flex-col animate-in slide-in-from-bottom duration-300 font-sans text-[#121212]">
 
@@ -38,52 +91,7 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
         <div className="flex flex-col gap-6 pb-12">
 
           {/* ── IN PROGRESS ── */}
-          {currentSession && (
-            // FIXED: Removed shadow (flat design)
-            <div className="border border-neutral-200 bg-white p-4">
-              
-              {/* Header row */}
-              <div className="flex items-baseline justify-between mb-3">
-                <div className="flex items-baseline gap-2">
-                  {/* FIXED: Bumped text-[9px] -> text-[10px] */}
-                  <span className="text-[10px] font-mono uppercase tracking-[0.24em] text-neutral-400">
-                    IN PROGRESS
-                  </span>
-                  <span className="text-base font-black text-[#121212]">
-                    {currentSession.id.toString().padStart(2, '0')}
-                  </span>
-                </div>
-              </div>
-
-              {/* Progress info */}
-              <div className="space-y-2">
-                <div className="flex items-baseline gap-2">
-                  {/* FIXED: Bumped text-[8px] -> text-[10px] */}
-                  <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-neutral-400">
-                    ASSIGNMENT
-                  </span>
-                  <span className="text-lg font-black tracking-tight text-[#121212]">
-                    {currentLevel.toString().padStart(2, '0')}
-                  </span>
-                  <span className="text-sm font-mono text-neutral-400">/ 20</span>
-                </div>
-
-                {/* Simple progress bar */}
-                <div className="h-1 bg-neutral-100 relative overflow-hidden">
-                  <div 
-                    className="absolute inset-y-0 left-0 bg-[#121212] transition-all duration-300"
-                    style={{ width: `${(currentLevel / 20) * 100}%` }}
-                  />
-                </div>
-
-                {/* Status label - FIXED: "Unverified" -> "Unauthenticated", Bumped size */}
-                <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-neutral-400">
-                  UNAUTHENTICATED · 20 ASSIGNMENTS TO COMPLETE
-                </p>
-              </div>
-
-            </div>
-          )}
+          {renderInProgressCard()}
 
           {/* ── COMPLETED SESSIONS GRID ── */}
           {sessions.length > 0 ? (
