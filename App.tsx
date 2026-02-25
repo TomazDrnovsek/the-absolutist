@@ -220,6 +220,7 @@ const App: React.FC = () => {
   };
 
   const handleAnalysis = () => {
+    audio.triggerHaptic(12);
     if (!currentLevel) return;
     const satellites = currentLevel.nodes.filter(n => !n.isLocked);
     let totalScore = 0;
@@ -269,11 +270,13 @@ const App: React.FC = () => {
   const handleNextLevel = () => {
     if (!session) return;
     audio.playAdvance();
+    audio.triggerHaptic([8, 20, 8]);
     const newProgress = [...session.progress];
     newProgress[levelIndex] = score;
     const updatedSession = { ...session, progress: newProgress };
     
     if (levelIndex >= 19) {
+        audio.triggerHaptic([10, 40, 10, 40, 80]);
         const completeSession = { ...updatedSession, isComplete: true };
         setSession(completeSession);
         localStorage.setItem('absolutist_current_session_v2', JSON.stringify(completeSession));
@@ -409,6 +412,7 @@ const App: React.FC = () => {
                             localStorage.setItem('absolutist_analogous_hint_seen', 'true');
                         }
                         audio.playTap();
+                        audio.triggerHaptic(6);
                         setActiveNodeId(id);
                     }}
                     onNodeDoubleClick={handleDevWin}
