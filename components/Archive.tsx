@@ -154,7 +154,7 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
             </div>
           ) : (
             <div className="text-center py-24 opacity-40">
-              <p className="text-[11px] font-mono uppercase tracking-[0.2em]">NO SESSIONS AUTHENTICATED YET</p>
+              <p className="text-[11px] font-mono uppercase tracking-[0.2em]">NO SESSIONS ON RECORD</p>
             </div>
           )}
 

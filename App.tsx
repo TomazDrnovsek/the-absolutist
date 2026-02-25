@@ -526,7 +526,7 @@ const App: React.FC = () => {
                                    onTrigger={handleNextLevel}
                                    className="w-full h-14 bg-[#121212] text-white font-normal uppercase tracking-widest text-xs flex items-center justify-center"
                                 >
-                                   {levelIndex >= 19 ? "AUTHENTICATE SESSION" : "NEXT ASSIGNMENT"}
+                                   {levelIndex >= 19 ? "PROOF SESSION" : "NEXT ASSIGNMENT"}
                                 </MechanicalButton>
                             ) : (
                                 <MechanicalButton 
