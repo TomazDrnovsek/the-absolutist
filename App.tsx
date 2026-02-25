@@ -370,6 +370,7 @@ const App: React.FC = () => {
                     className="justify-self-end flex flex-col items-end justify-center leading-tight cursor-pointer group select-none"
                     onClick={() => {
                         audio.playClick();
+                        audio.triggerHaptic('light');
                         setShowArchive(true);
                     }}
                 >
