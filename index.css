@@ -96,6 +96,30 @@
     20% { opacity: 0.4; }
     100% { transform: scale(1.4); opacity: 0; }
   }
+  
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(.33);
+    }
+    80%, 100% {
+      opacity: 0;
+    }
+  }
+  
+  @keyframes hint-pulse {
+  0%, 100% {
+    transform: scale(1);
+    stroke: #9ca3af; /* gray-400 */
+  }
+  50% {
+    transform: scale(1.05);
+    stroke: #121212; /* black */
+  }
+}
+
+.animate-hint-pulse {
+  animation: hint-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
 
   .animate-ring-pulse {
     animation: ringPulse 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;

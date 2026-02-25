@@ -12,7 +12,8 @@ interface HarmonyNodeViewProps {
   isBauhausMode: boolean;
   onClick: (id: number) => void;
   onDoubleClick?: (id: number) => void;
-  size?: number; 
+  size?: number;
+  isHintTarget?: boolean;
 }
 
 const HarmonyNodeView: React.FC<HarmonyNodeViewProps> = ({
@@ -23,14 +24,15 @@ const HarmonyNodeView: React.FC<HarmonyNodeViewProps> = ({
   isBauhausMode,
   onClick,
   onDoubleClick,
-  size = 40
+  size = 40,
+  isHintTarget = false,
 }) => {
   const brightness = getPerceivedBrightness(color);
   const contrastColor = brightness > 130 ? '#121212' : '#FFFFFF';
   const isInteractive = !isLocked;
 
   return (
-    <div 
+    <div
       className={`
         absolute transform -translate-x-1/2 -translate-y-1/2
         transition-all duration-300 ease-out
@@ -44,11 +46,29 @@ const HarmonyNodeView: React.FC<HarmonyNodeViewProps> = ({
         height: size,
       }}
     >
-      {/* SELECTION RING 
+      {isHintTarget && (
+        <div className="absolute inset-[-4px] z-0">
+          <svg
+            className="w-full h-full overflow-visible animate-hint-pulse"
+            viewBox="0 0 100 100"
+          >
+            <circle
+              cx="50"
+              cy="50"
+              r="49"
+              fill="none"
+              strokeWidth="2"
+              strokeDasharray="8 6"
+            />
+          </svg>
+        </div>
+      )}
+
+      {/* SELECTION RING
         - Bauhaus Mode: shape outline (ShapePrimitive with variant="outline")
         - Normal Mode: circle border
       */}
-      <div 
+      <div
         className={`
           absolute transition-all duration-200 pointer-events-none
           ${isSelected ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}
@@ -56,7 +76,7 @@ const HarmonyNodeView: React.FC<HarmonyNodeViewProps> = ({
         `}
       >
         {isBauhausMode ? (
-             <ShapePrimitive 
+             <ShapePrimitive
                 hue={color.h}
                 color="transparent"
                 isBauhausMode={true}
@@ -69,23 +89,23 @@ const HarmonyNodeView: React.FC<HarmonyNodeViewProps> = ({
         )}
       </div>
 
-      {/* THE SWATCH BODY 
+      {/* THE SWATCH BODY
         - Removed drop-shadow to prevent visual centering offsets
       */}
       <div className="relative w-full h-full z-10">
-         <ShapePrimitive 
+         <ShapePrimitive
             hue={color.h}
             color={hslToString(color)}
             isBauhausMode={isBauhausMode}
-            hasBorder={!isBauhausMode} 
+            hasBorder={!isBauhausMode}
             className={`w-full h-full ${!isBauhausMode ? 'rounded-full' : ''}`}
          />
-         
+
          {/* LOCKED INDICATOR */}
          {isLocked && (
              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                 <div 
-                    className="w-1.5 h-1.5 rounded-full" 
+                 <div
+                    className="w-1.5 h-1.5 rounded-full"
                     style={{ backgroundColor: contrastColor }}
                  />
              </div>

@@ -36,6 +36,7 @@ const App: React.FC = () => {
   // UI Flow
   const [isDeveloped, setIsDeveloped] = useState(false); 
   const [score, setScore] = useState<number | null>(null);
+  const [showAnalogousHint, setShowAnalogousHint] = useState(false);
   
   const [analysisDeltas, setAnalysisDeltas] = useState<{h: number, s: number, l: number} | null>(null);
 
@@ -109,6 +110,20 @@ const App: React.FC = () => {
   const currentLevel = session?.levels[levelIndex];
   const activeNode = currentLevel?.nodes.find(n => n.id === activeNodeId);
   const isWin = score !== null && score >= 80;
+  
+  useEffect(() => {
+    // On level change, check if we should show the hint.
+    if (currentLevel && currentLevel.harmonyType.toLowerCase() === 'analogous') {
+        const hintSeen = localStorage.getItem('absolutist_analogous_hint_seen');
+        if (hintSeen !== 'true') {
+            setShowAnalogousHint(true);
+        } else {
+            setShowAnalogousHint(false); // Make sure it's off if seen
+        }
+    } else {
+        setShowAnalogousHint(false); // Turn off for non-analogous levels
+    }
+}, [currentLevel]);
 
   const handleStart = async () => {
       await audio.resume();
@@ -157,6 +172,7 @@ const App: React.FC = () => {
     localStorage.removeItem('absolutist_current_session_v2');
     localStorage.removeItem('absolutist_level_index_v2');
     localStorage.removeItem('absolutist_onboarding_complete');
+    localStorage.removeItem('absolutist_analogous_hint_seen');
 
     setArchivedSessions([]);
     const newSession = getNextSession(1);
@@ -384,6 +400,10 @@ const App: React.FC = () => {
                     level={currentLevel} 
                     activeNodeId={activeNodeId} 
                     onSelectNode={(id) => {
+                        if (showAnalogousHint) {
+                            setShowAnalogousHint(false);
+                            localStorage.setItem('absolutist_analogous_hint_seen', 'true');
+                        }
                         audio.playTap();
                         setActiveNodeId(id);
                     }}
@@ -391,6 +411,7 @@ const App: React.FC = () => {
                     isBauhausMode={isBauhausMode}
                     isRevealed={false}
                     isWin={false}
+                    showNodeHint={showAnalogousHint}
                  />
             </div>
         </div>

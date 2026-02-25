@@ -43,6 +43,15 @@ const HarmonyView: React.FC<HarmonyViewProps> = ({
         clearTimeout(toGrayTimer);
     };
   }, []); // Empty dependency array ensures this runs only once on mount.
+  
+  useEffect(() => {
+    if (showNodeHint) {
+      const hintTimer = setTimeout(() => {
+        // Your logic to change color from gray to black in 4 seconds
+      }, 4000);
+      return () => clearTimeout(hintTimer);
+    }
+  }, [showNodeHint]);
 
   // Convert Hue (0-360) to SVG Coordinates
   const calculatePosition = (hue: number) => {
