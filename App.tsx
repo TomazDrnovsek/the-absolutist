@@ -384,6 +384,10 @@ const App: React.FC = () => {
                    </div>
                 </div>
              </header>
+            <div
+                className="absolute bottom-0 left-0 h-px bg-black transition-all duration-300"
+                style={{ width: `${((levelIndex + 1) / 20) * 100}%` }}
+            />
         </div>
 
         {/* --- 2. MAIN STAGE --- */}
