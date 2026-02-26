@@ -23,12 +23,8 @@ export const calculateMatchScore = (target: HSL, current: HSL): number => {
   const sDiff = Math.abs(target.s - current.s);
   const lDiff = Math.abs(target.l - current.l);
 
-  // 3. Scoring
-  // Hue: quadratic curve — heavily rewards precision near zero, degrades
-  // gracefully toward the 40° cliff. Same cliff as before (hDiff² / 16 = 100 at 40°).
-  const hScore = Math.max(0, 100 - (hDiff * hDiff / 16));
-
-  // S and L: linear, zeroing at 50 units off. Unchanged.
+  // 3. Weighting (Hue is king in this game)
+  const hScore = Math.max(0, 100 - (hDiff * 2.5)); // 40 degrees off = 0 score
   const sScore = Math.max(0, 100 - (sDiff * 2));
   const lScore = Math.max(0, 100 - (lDiff * 2));
 
