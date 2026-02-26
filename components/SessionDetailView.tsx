@@ -75,7 +75,7 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
             />
           </div>
 
-          <div className="mx-4 border-t border-neutral-150" style={{ borderColor: '#e8e5de' }} />
+          <div className="mx-4 border-t" style={{ borderColor: '#e8e5de' }} />
 
           <div className="px-4 py-3.5 flex items-end justify-between">
             <div>
@@ -100,7 +100,11 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
 
       </div>
 
-      <div className="flex-none w-full px-6 pb-8 relative z-10">
+      {/* Actions — pb-8 (2rem) + env(safe-area-inset-bottom) via inline calc */}
+      <div
+        className="flex-none w-full px-6 relative z-10"
+        style={{ paddingBottom: 'calc(2rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         <MechanicalButton
           onTrigger={handleShare}
           disabled={isSharing}

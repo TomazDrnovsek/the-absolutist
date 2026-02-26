@@ -69,17 +69,12 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
   return (
     <div className="absolute inset-0 z-50 bg-[#F5F2EB] flex flex-col animate-in slide-in-from-bottom duration-300 font-sans text-[#121212]">
 
-      {/* HEADER: Match App.tsx header exact layout 
-         - Changed py-6 to py-4 to match main screen
-         - Added pt-safe-top to handle notch
-      */}
       <div className="shrink-0 pt-safe-top bg-[#F5F2EB] border-b border-[#eae7e0] z-20">
          <div className="px-6 py-4 flex justify-between items-center">
             <h2 className="text-4xl font-bold lowercase tracking-[-0.04em] text-[#121212]">sessions.</h2>
             <MechanicalButton
               onTrigger={() => { audio.playClick(); onClose(); }}
               scaleActive={0.85}
-              // FIXED: Increased touch target to 48px (w-12 h-12)
               className="w-12 h-12 flex items-center justify-center border-2 border-[#121212] hover:bg-[#121212] hover:text-white transition-colors text-sm"
             >
               ✕
@@ -109,7 +104,6 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
                     }}
                     className="block w-full text-left hover:opacity-80 transition-opacity"
                   >
-                    {/* Card: everything inside the border. FIXED: Removed hover:border-neutral-300 for flatness consistency */}
                     <div className="border border-neutral-200 bg-white transition-colors">
                       
                       {/* Poster with padding */}
@@ -123,12 +117,11 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
                       </div>
 
                       {/* Divider */}
-                      <div className="mx-2 border-t border-neutral-150" style={{ borderColor: '#e8e5de' }} />
+                      <div className="mx-2 border-t" style={{ borderColor: '#e8e5de' }} />
 
                       {/* Metadata strip */}
                       <div className="px-2.5 py-2.5 flex items-center justify-between">
                         <div>
-                          {/* FIXED: Bumped text-[7px] -> text-[9px] */}
                           <p className="text-[9px] font-mono uppercase tracking-[0.22em] text-neutral-400 mb-1">
                             SESSION
                           </p>
@@ -137,7 +130,6 @@ const Archive: React.FC<ArchiveProps> = ({ currentSession, currentLevel, session
                           </p>
                         </div>
                         <div className="text-right">
-                          {/* FIXED: Bumped text-[7px] -> text-[9px] */}
                           <p className="text-[9px] font-mono uppercase tracking-[0.22em] text-neutral-400 mb-1">
                             RESONANCE
                           </p>

@@ -351,6 +351,18 @@ const App: React.FC = () => {
     ? (HARMONY_RULES[currentLevel.harmonyType as HarmonyType]?.label || currentLevel.harmonyType.toUpperCase())
     : '';
 
+  // Ring size: constrained by viewport width, viewport height, and the actual
+  // stage height after subtracting the fixed header (81px chrome + safe-area-inset-top)
+  // and the 45% controls panel. The third term only bites on short phones —
+  // on S22 it evaluates to ~324px, safely larger than the 306px from 85vw.
+  const RING_SIZE = 'min(50vh, 85vw, calc(55vh - 81px - env(safe-area-inset-top, 0px)))';
+
+  // Controls panel minimum height: guarantees 3 full sliders + button always fit,
+  // regardless of viewport height. Ring (flex-1) compresses to absorb any deficit.
+  // Breakdown: pt-8(32) + 3×slider(141) + 2×gap-6(48) + button area pb-8+h-14(88) = 309px
+  // Plus env(safe-area-inset-bottom) for iPhone home bar (34px).
+  const CONTROLS_MIN_HEIGHT = 'calc(309px + env(safe-area-inset-bottom, 0px))';
+
   return (
     <div className="fixed inset-0 flex flex-col bg-[#F5F2EB] font-sans overflow-hidden select-none text-[#121212]">
 
@@ -406,8 +418,8 @@ const App: React.FC = () => {
         <div
           className="relative flex items-center justify-center"
           style={{
-            width: 'min(50vh, 85vw)',
-            height: 'min(50vh, 85vw)',
+            width: RING_SIZE,
+            height: RING_SIZE,
           }}
         >
           <HarmonyView
@@ -432,8 +444,14 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* --- 3. CONTROLS --- */}
-      <div className="h-[45%] shrink-0 bg-[#F5F2EB] flex flex-col px-6 pt-8 pb-safe-bottom relative z-30">
+      {/* --- 3. CONTROLS ---
+          minHeight ensures sliders and button never overlap on short viewports.
+          The ring (flex-1 above) compresses to absorb any deficit.
+          On tall phones (S22 etc.) h-[45%] is larger than minHeight — no change. */}
+      <div
+        className="h-[45%] shrink-0 bg-[#F5F2EB] flex flex-col px-6 pt-8 pb-safe-bottom relative z-30"
+        style={{ minHeight: CONTROLS_MIN_HEIGHT }}
+      >
         <div className="flex-1 flex flex-col h-full">
           <div className="flex flex-col gap-6">
             <Slider label="H" value={activeNode.userColor.h} min={0} max={360} onChange={(v) => handleUpdateColor('h', v)} gradient={hueGradient} disabled={isDeveloped || activeNode.isLocked} />
@@ -475,8 +493,8 @@ const App: React.FC = () => {
             <div
               className="relative flex items-center justify-center"
               style={{
-                width: 'min(50vh, 85vw)',
-                height: 'min(50vh, 85vw)',
+                width: RING_SIZE,
+                height: RING_SIZE,
               }}
             >
               <HarmonyView
@@ -492,7 +510,12 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          <div className="h-[45%] shrink-0 flex flex-col px-6 pt-8 pb-safe-bottom relative z-30 pointer-events-none">
+          {/* Win overlay controls — same minHeight as gameplay panel.
+              Buttons stay at identical vertical position to gameplay screen. */}
+          <div
+            className="h-[45%] shrink-0 flex flex-col px-6 pt-8 pb-safe-bottom relative z-30 pointer-events-none"
+            style={{ minHeight: CONTROLS_MIN_HEIGHT }}
+          >
             <div className="flex-1 flex flex-col h-full">
 
               <div className="flex flex-col items-center justify-center gap-3 pt-2 animate-in slide-in-from-bottom-4 fade-in duration-500">

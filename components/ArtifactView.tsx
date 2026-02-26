@@ -89,7 +89,7 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
           </div>
 
           {/* Hairline rule */}
-          <div className="mx-4 border-t border-neutral-150" style={{ borderColor: '#e8e5de' }} />
+          <div className="mx-4 border-t" style={{ borderColor: '#e8e5de' }} />
 
           {/* Info strip */}
           <div className="px-4 py-3.5 flex items-end justify-between">
@@ -116,12 +116,15 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
 
       </div>
 
-      {/* Actions */}
-      <div className={`
-        flex-none w-full pb-8 flex flex-col gap-3 relative z-10
-        transition-all duration-500 delay-100
-        ${isExiting ? 'translate-y-20 opacity-0' : 'animate-in slide-in-from-bottom-full fade-in duration-700 delay-700'}
-      `}>
+      {/* Actions — pb-8 (2rem) + env(safe-area-inset-bottom) via inline calc */}
+      <div
+        className={`
+          flex-none w-full flex flex-col gap-3 relative z-10
+          transition-all duration-500 delay-100
+          ${isExiting ? 'translate-y-20 opacity-0' : 'animate-in slide-in-from-bottom-full fade-in duration-700 delay-700'}
+        `}
+        style={{ paddingBottom: 'calc(2rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         <MechanicalButton
           onTrigger={handleExport}
           disabled={isExporting}

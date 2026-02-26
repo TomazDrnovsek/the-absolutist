@@ -1,5 +1,50 @@
 @import "tailwindcss";
 
+/* ─── LOCAL FONT: Jost ─────────────────────────────────────────────────────
+   Files must be present at public/fonts/ in the project root.
+   Vite copies public/ verbatim into dist/, which Capacitor bundles natively.
+   No network required at runtime.
+────────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Jost';
+  src: url('/fonts/Jost-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Jost';
+  src: url('/fonts/Jost-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Jost';
+  src: url('/fonts/Jost-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Jost';
+  src: url('/fonts/Jost-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Jost';
+  src: url('/fonts/Jost-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: block;
+}
+
 /* Custom Utilities for "The Absolutist" */
 @layer utilities {
   .pt-safe-top {
@@ -107,19 +152,19 @@
   }
   
   @keyframes hint-pulse {
-  0%, 100% {
-    transform: scale(1);
-    stroke: #9ca3af; /* gray-400 */
+    0%, 100% {
+      transform: scale(1);
+      stroke: #9ca3af; /* gray-400 */
+    }
+    50% {
+      transform: scale(1.05);
+      stroke: #121212; /* black */
+    }
   }
-  50% {
-    transform: scale(1.05);
-    stroke: #121212; /* black */
-  }
-}
 
-.animate-hint-pulse {
-  animation: hint-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
+  .animate-hint-pulse {
+    animation: hint-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
 
   .animate-ring-pulse {
     animation: ringPulse 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -140,6 +185,12 @@
 body {
   background-color: #F5F2EB;
   color: #121212;
+  font-family: 'Jost', sans-serif;
   font-feature-settings: "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
+  /* Prevent browsers from inflating text on mobile.
+     Without this, iOS Safari can scale up small labels (9–10px)
+     breaking the Swiss grid typography. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }

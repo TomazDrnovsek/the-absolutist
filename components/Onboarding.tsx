@@ -70,7 +70,6 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                     onSelectNode={() => {}} 
                     onNodeDoubleClick={() => {}} 
                     isBauhausMode={false}
-                    // FIXED: Kept strictly false so the background doesn't double-animate
                     isRevealed={false}
                     isWin={false}
                     showLabel={false}
@@ -93,7 +92,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         {/* --- 2. BOTTOM SECTION: SLIDERS --- */}
         <div className="h-[45%] shrink-0 bg-[#F5F2EB] flex flex-col px-6 pb-safe-bottom z-30">
              <div className="flex-1 flex flex-col h-full justify-center">
-                 <div className="flex flex-col gap-10">
+                 <div className="flex flex-col gap-6">
                       <Slider 
                           label="H" 
                           value={userColor.h} min={0} max={360} 
