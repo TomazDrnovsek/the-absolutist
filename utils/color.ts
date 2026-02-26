@@ -18,23 +18,28 @@ export const calculateMatchScore = (target: HSL, current: HSL): number => {
   // 1. Hue Difference (Circular)
   let hDiff = Math.abs(target.h - current.h);
   if (hDiff > 180) hDiff = 360 - hDiff;
-  
+
   // 2. Sat/Lum Difference (Linear)
   const sDiff = Math.abs(target.s - current.s);
   const lDiff = Math.abs(target.l - current.l);
-  
-  // 3. Weighting (Hue is king in this game)
-  const hScore = Math.max(0, 100 - (hDiff * 2.5)); // 40 degrees off = 0 score
+
+  // 3. Scoring
+  // Hue: quadratic curve — heavily rewards precision near zero, degrades
+  // gracefully toward the 40° cliff. Same cliff as before (hDiff² / 16 = 100 at 40°).
+  const hScore = Math.max(0, 100 - (hDiff * hDiff / 16));
+
+  // S and L: linear, zeroing at 50 units off. Unchanged.
   const sScore = Math.max(0, 100 - (sDiff * 2));
   const lScore = Math.max(0, 100 - (lDiff * 2));
-  
+
   // 4. Composition (60% Hue, 20% Sat, 20% Lum)
-  return Math.round((hScore * 0.6) + (sScore * 0.2) + (lScore * 0.2));
+  // Returns raw float — rounding happens once at the call site (handleAnalysis).
+  return (hScore * 0.6) + (sScore * 0.2) + (lScore * 0.2);
 };
 
 export const getPerceivedBrightness = (color: HSL): number => {
   // Quick estimation of brightness for text contrast
-  return color.l; 
+  return color.l;
 };
 
 export const FIXED_CENTER_COLOR: HSL = { h: 0, s: 0, l: 50 };
