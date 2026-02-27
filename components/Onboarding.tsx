@@ -12,10 +12,21 @@ interface OnboardingProps {
 
 const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   // --- State ---
-  // Start with an off-target color to require interaction
   const [userColor, setUserColor] = useState<HSL>({ h: 200, s: 50, l: 40 }); 
   const [isSuccess, setIsSuccess] = useState(false);
-  
+
+  // --- Label sequence state ---
+  const [showTune, setShowTune] = useState(true);
+  const [showComplementary, setShowComplementary] = useState(false);
+
+  useEffect(() => {
+    // Fade out TUNE THE HARMONY at 4s
+    const outTimer = setTimeout(() => setShowTune(false), 4000);
+    // Fade in COMPLEMENTARY after fade-out completes (500ms gap)
+    const inTimer  = setTimeout(() => setShowComplementary(true), 4500);
+    return () => { clearTimeout(outTimer); clearTimeout(inTimer); };
+  }, []);
+
   // --- Tutorial Level Data ---
   const rootColor: HSL = { h: 350, s: 85, l: 50 }; 
   const targetColor: HSL = { h: 170, s: 85, l: 50 }; 
@@ -41,13 +52,11 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
       const currentScore = calculateMatchScore(targetColor, userColor);
       
-      // Threshold: 80% 
       if (currentScore >= 80) {
           setIsSuccess(true);
           audio.playSuccess();
           audio.triggerHaptic([10, 50, 10, 50]);
 
-          // AUTO-PROGRESS: Wait exactly 3 seconds (3000ms), then proceed
           setTimeout(() => {
               onComplete();
           }, 3000);
@@ -61,7 +70,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   return (
     <div className="fixed inset-0 flex flex-col bg-[#F5F2EB] font-sans overflow-hidden select-none text-[#121212]">
         
-        {/* --- 1. TOP SECTION: HARMONY VIEW (No Header) --- */}
+        {/* --- 1. TOP SECTION: HARMONY VIEW --- */}
         <div className="flex-1 w-full relative z-10 flex items-center justify-center p-4 touch-none">
             <div className="relative aspect-square w-full max-h-[50vh] max-w-[50vh] flex items-center justify-center">
                  <HarmonyView 
@@ -75,16 +84,30 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                     showLabel={false}
                  />
                  
-                 {/* Hint Overlay */}
+                 {/* Label sequence — hidden on success */}
                  {!isSuccess && (
-                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none select-none">
-                         <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 mb-2 animate-pulse whitespace-nowrap">
-                             TUNE THE HARMONY
-                         </span>
-                         <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-[#121212] opacity-40">
-                             {tutorialLevel.harmonyType}
-                         </span>
+                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none flex items-center justify-center">
+
+                     {/* Wrapper handles fade — inner span handles pulse. No opacity conflict. */}
+                     <div
+                       className="absolute"
+                       style={{ opacity: showTune ? 1 : 0, transition: 'opacity 500ms ease-in-out' }}
+                     >
+                       <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-[#121212] text-center whitespace-nowrap animate-pulse">
+                         TUNE THE HARMONY
+                       </span>
                      </div>
+
+                     <div
+                       className="absolute"
+                       style={{ opacity: showComplementary ? 1 : 0, transition: 'opacity 500ms ease-in-out' }}
+                     >
+                       <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-[#121212] text-center whitespace-nowrap animate-pulse">
+                         {tutorialLevel.harmonyType}
+                       </span>
+                     </div>
+
+                   </div>
                  )}
             </div>
         </div>
@@ -118,11 +141,10 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
              </div>
         </div>
 
-        {/* --- 3. SUCCESS OVERLAY (Matches main game structure) --- */}
+        {/* --- 3. SUCCESS OVERLAY --- */}
         {isSuccess && (
           <div className="fixed inset-0 z-50 bg-[#F5F2EB] flex flex-col font-sans text-[#121212] animate-in fade-in duration-500">
               
-              {/* TOP STAGE: Matches the exact height and layout of the Onboarding gameplay section */}
               <div className="flex-1 w-full relative z-10 flex items-center justify-center p-4 pointer-events-none">
                   <div className="relative aspect-square w-full max-h-[50vh] max-w-[50vh] flex items-center justify-center">
                        <HarmonyView 
@@ -137,25 +159,18 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                   </div>
               </div>
 
-              {/* BOTTOM STAGE: Matches the layout and padding of the main game's win screen controls */}
               <div className="h-[45%] shrink-0 flex flex-col px-6 pt-8 pb-safe-bottom relative z-30 pointer-events-none">
                    <div className="flex-1 flex flex-col h-full">
-                       
-                       {/* TEXT ALIGNMENT */}
                        <div className="flex flex-col items-center justify-center gap-3 pt-2 animate-in slide-in-from-bottom-4 fade-in duration-500">
-                          {/* Matches main game's "Score" font size and position */}
                           <div className="text-6xl font-medium tabular-nums text-[#121212]">
                               RESONANCE
                           </div>
-                          
-                          {/* Matches main game's "Deltas" font size, color, and position */}
                           <div className="flex gap-4 mb-1 opacity-80">
                               <span className="text-xs font-bold text-neutral-500 uppercase tracking-[0.25em]">
                                   EYE CALIBRATED — ASSIGNMENTS BEGIN
                               </span>
                           </div>
                        </div>
-
                    </div>
               </div>
           </div>
