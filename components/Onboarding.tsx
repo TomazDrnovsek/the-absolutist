@@ -18,13 +18,22 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   // --- Label sequence state ---
   const [showTune, setShowTune] = useState(true);
   const [showComplementary, setShowComplementary] = useState(false);
+  // One-shot blink for TUNE THE HARMONY: gray → black → gray over ~3s
+  const [tuneOpacity, setTuneOpacity] = useState(0.25);
 
   useEffect(() => {
-    // Fade out TUNE THE HARMONY at 4s
-    const outTimer = setTimeout(() => setShowTune(false), 4000);
-    // Fade in COMPLEMENTARY after fade-out completes (500ms gap)
+    // Blink: fade to black at 300ms, back to gray at 1800ms
+    const toBlack = setTimeout(() => setTuneOpacity(1),    300);
+    const toGray  = setTimeout(() => setTuneOpacity(0.25), 1800);
+    // Fade out the whole label at 4s, fade in COMPLEMENTARY at 4.5s
+    const outTimer = setTimeout(() => setShowTune(false),        4000);
     const inTimer  = setTimeout(() => setShowComplementary(true), 4500);
-    return () => { clearTimeout(outTimer); clearTimeout(inTimer); };
+    return () => {
+      clearTimeout(toBlack);
+      clearTimeout(toGray);
+      clearTimeout(outTimer);
+      clearTimeout(inTimer);
+    };
   }, []);
 
   // --- Tutorial Level Data ---
@@ -93,7 +102,10 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                        className="absolute"
                        style={{ opacity: showTune ? 1 : 0, transition: 'opacity 500ms ease-in-out' }}
                      >
-                       <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-[#121212] text-center whitespace-nowrap animate-pulse">
+                       <span
+                         className="text-[9px] font-mono tracking-[0.25em] uppercase text-center whitespace-nowrap"
+                         style={{ color: `rgba(18,18,18,${tuneOpacity})`, transition: 'color 1000ms ease-in-out' }}
+                       >
                          TUNE THE HARMONY
                        </span>
                      </div>
@@ -162,11 +174,11 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               <div className="h-[45%] shrink-0 flex flex-col px-6 pt-8 pb-safe-bottom relative z-30 pointer-events-none">
                    <div className="flex-1 flex flex-col h-full">
                        <div className="flex flex-col items-center justify-center gap-3 pt-2 animate-in slide-in-from-bottom-4 fade-in duration-500">
-                          <div className="text-6xl font-medium tabular-nums text-[#121212]">
+                          <div className="text-5xl font-medium tabular-nums text-[#121212]">
                               RESONANCE
                           </div>
                           <div className="flex gap-4 mb-1 opacity-80">
-                              <span className="text-xs font-bold text-neutral-500 uppercase tracking-[0.25em]">
+                              <span className="text-xs font-bold text-neutral-500 uppercase tracking-[0.25em] text-center">
                                   EYE CALIBRATED — ASSIGNMENTS BEGIN
                               </span>
                           </div>
