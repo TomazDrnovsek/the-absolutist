@@ -67,11 +67,7 @@ const ArtifactView: React.FC<ArtifactViewProps> = ({ session, onArchive }) => {
         ${isExiting ? 'translate-y-[100vh] opacity-0' : 'translate-y-0 opacity-100'}
       `}>
 
-        <div className="flex-[2]" />
-
-        <p className="text-center text-[9px] font-mono uppercase tracking-[0.28em] text-neutral-400 mb-5 animate-in slide-in-from-top-4 fade-in duration-700 delay-100">
-          THE ABSOLUTIST
-        </p>
+        <div className="flex-1" />
 
         {/* ── ARTIFACT CARD ── */}
         <div ref={artifactRef} className="

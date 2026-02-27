@@ -57,10 +57,6 @@ const SessionDetailView: React.FC<SessionDetailViewProps> = ({ session, onClose 
 
       <div className="flex-1 flex flex-col items-center justify-center w-full px-10 relative z-10">
 
-        <p className="text-[11px] font-mono uppercase tracking-[0.28em] text-neutral-400 mb-5">
-          THE ABSOLUTIST
-        </p>
-
         <div
           ref={cardRef}
           className="w-full max-w-[280px] bg-white border border-neutral-200"

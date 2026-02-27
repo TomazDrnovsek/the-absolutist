@@ -544,6 +544,17 @@ const BauhausComposition: React.FC<BauhausCompositionProps> = ({
     >
       <rect x={0} y={0} width={CW} height={CH} fill="#ffffff" />
       {isComplete && identity ? <GenerativePoster identity={identity} /> : renderInProgress()}
+      <text
+        x={8}
+        y={313}
+        fontFamily="'Jost', sans-serif"
+        fontWeight="900"
+        fontSize="7"
+        letterSpacing="0"
+        fill="#121212"
+      >
+        the absolutist.
+      </text>
       <rect x={0} y={0} width={CW} height={CH} fill="none" stroke="#121212" strokeWidth={2} />
     </svg>
   );
