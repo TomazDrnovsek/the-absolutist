@@ -69,13 +69,13 @@ const Menu: React.FC<MenuProps> = ({
 
         <MechanicalButton onTrigger={() => { audio.playClick(); onClose(); }} scaleActive={0.98} className="text-left group flex items-baseline gap-6 w-full">
           <span className="text-xs font-normal tabular-nums text-neutral-400/60 group-active:text-[#121212]">01</span>
-          <span className="flex-1 text-2xl font-light uppercase tracking-widest group-active:translate-x-2 group-active:font-bold transition-all text-[#121212]">resume</span>
+          <span className="flex-1 text-xl font-light uppercase tracking-widest group-active:translate-x-2 group-active:font-bold transition-all text-[#121212]">resume</span>
         </MechanicalButton>
 
         <MechanicalButton onTrigger={() => { audio.playClick(); toggleBauhausMode(); }} scaleActive={0.98} className="text-left group flex items-baseline gap-6 w-full">
           <span className="text-xs font-normal tabular-nums text-neutral-400/60 group-active:text-[#121212]">02</span>
           <div className="flex-1 flex items-center justify-between gap-4">
-            <span className={`text-2xl uppercase tracking-widest text-[#121212] group-active:translate-x-2 transition-all ${isBauhausMode ? 'font-bold' : 'font-light'}`}>bauhaus mode</span>
+            <span className={`text-xl uppercase tracking-widest text-[#121212] group-active:translate-x-2 transition-all ${isBauhausMode ? 'font-bold' : 'font-light'}`}>bauhaus</span>
             <div className={`w-12 h-6 border-2 border-[#121212] p-1 transition-colors ${isBauhausMode ? 'bg-[#121212]' : 'bg-transparent'}`}>
               <div className={`h-full w-1/2 bg-[#121212] transition-all ease-out ${isBauhausMode ? 'translate-x-full bg-white' : 'translate-x-0'}`} />
             </div>
@@ -85,7 +85,7 @@ const Menu: React.FC<MenuProps> = ({
         <MechanicalButton onTrigger={() => { if (!isSoundEnabled) audio.setMuted(false); audio.playClick(); toggleSound(); }} scaleActive={0.98} className="text-left group flex items-baseline gap-6 w-full">
           <span className="text-xs font-normal tabular-nums text-neutral-400/60 group-active:text-[#121212]">03</span>
           <div className="flex-1 flex items-center justify-between gap-4">
-            <span className={`text-2xl uppercase tracking-widest text-[#121212] group-active:translate-x-2 transition-all ${isSoundEnabled ? 'font-bold' : 'font-light'}`}>sound</span>
+            <span className={`text-xl uppercase tracking-widest text-[#121212] group-active:translate-x-2 transition-all ${isSoundEnabled ? 'font-bold' : 'font-light'}`}>sound</span>
             <div className={`w-12 h-6 border-2 border-[#121212] p-1 transition-colors ${isSoundEnabled ? 'bg-[#121212]' : 'bg-transparent'}`}>
               <div className={`h-full w-1/2 bg-[#121212] transition-all ease-out ${isSoundEnabled ? 'translate-x-full bg-white' : 'translate-x-0'}`} />
             </div>
@@ -94,18 +94,18 @@ const Menu: React.FC<MenuProps> = ({
 
         <MechanicalButton onTrigger={() => { audio.playClick(); onRestartOnboarding(); }} scaleActive={0.98} className="text-left group flex items-baseline gap-6 w-full">
           <span className="text-xs font-normal tabular-nums text-neutral-400/60 group-active:text-[#121212]">04</span>
-          <span className="flex-1 text-2xl font-light uppercase tracking-widest group-active:translate-x-2 group-active:font-bold transition-all text-[#121212]">tutorial</span>
+          <span className="flex-1 text-xl font-light uppercase tracking-widest group-active:translate-x-2 group-active:font-bold transition-all text-[#121212]">tutorial</span>
         </MechanicalButton>
 
         <MechanicalButton onTrigger={() => { audio.playClick(); onOpenArchive(); }} scaleActive={0.98} className="text-left group flex items-baseline gap-6 w-full">
           <span className="text-xs font-normal tabular-nums text-neutral-400/60 group-active:text-[#121212]">05</span>
-          <span className="flex-1 text-2xl font-light uppercase tracking-widest group-active:translate-x-2 group-active:font-bold transition-all text-[#121212]">sessions</span>
+          <span className="flex-1 text-xl font-light uppercase tracking-widest group-active:translate-x-2 group-active:font-bold transition-all text-[#121212]">sessions</span>
         </MechanicalButton>
 
         {onExportBackup && (
           <MechanicalButton onTrigger={() => { audio.playClick(); onExportBackup(); }} scaleActive={0.98} className="text-left group flex items-baseline gap-6 w-full">
             <span className="text-xs font-normal tabular-nums text-neutral-400/60 group-active:text-[#121212]">06</span>
-            <span className="flex-1 text-2xl font-light uppercase tracking-widest group-active:translate-x-2 group-active:font-bold transition-all text-[#121212]">export backup</span>
+            <span className="flex-1 text-xl font-light uppercase tracking-widest group-active:translate-x-2 group-active:font-bold transition-all text-[#121212]">export backup</span>
           </MechanicalButton>
         )}
 
@@ -113,7 +113,7 @@ const Menu: React.FC<MenuProps> = ({
           <>
             <MechanicalButton onTrigger={handleImportClick} scaleActive={0.98} className="text-left group flex items-baseline gap-6 w-full">
               <span className="text-xs font-normal tabular-nums text-neutral-400/60 group-active:text-[#121212]">07</span>
-              <span className="flex-1 text-2xl font-light uppercase tracking-widest group-active:translate-x-2 group-active:font-bold transition-all text-[#121212]">import backup</span>
+              <span className="flex-1 text-xl font-light uppercase tracking-widest group-active:translate-x-2 group-active:font-bold transition-all text-[#121212]">import backup</span>
             </MechanicalButton>
             <input
               ref={fileInputRef}

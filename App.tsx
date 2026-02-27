@@ -523,8 +523,12 @@ const App: React.FC = () => {
                   {score}%
                 </div>
 
+                <div className="text-xs font-bold uppercase tracking-[0.25em] text-neutral-500 text-center">
+                  {isWin ? `${harmonyLabel} RESONANCE ACHIEVED` : "DISSONANCE DETECTED"}
+                </div>
+
                 {analysisDeltas && (
-                  <div className="flex flex-col items-center gap-1">
+                  <div className="flex flex-col items-center gap-1 mt-2">
                     <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-neutral-400 opacity-60">DEVIATION</span>
                     <div className="flex gap-4 opacity-80">
                       <div className="flex gap-1 items-baseline">
@@ -542,10 +546,6 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 )}
-
-                <div className="text-xs font-bold uppercase tracking-[0.25em] text-neutral-500 text-center">
-                  {isWin ? `${harmonyLabel} RESONANCE ACHIEVED` : "DISSONANCE DETECTED"}
-                </div>
               </div>
 
               <div className="flex-1 flex items-end justify-center pb-8 min-h-0 pointer-events-auto">
